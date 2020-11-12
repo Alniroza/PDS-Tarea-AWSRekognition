@@ -1,3 +1,4 @@
 [2020-11-11 12:15:27.046563] Subiendo keepitmonday.jpgal bucket rekognitionpics
 [2020-11-11 13:00:19.273164] Subiendo keepitmonday.jpg al bucket rekognitionpics
 [2020-11-11 13:03:30.885383] Subiendo keepitmonday.jpg al bucket rekognitionpics
+[2020-11-12 00:31:35.697483] Subiendo stillmonday.jpg al bucket rekognitionpics
