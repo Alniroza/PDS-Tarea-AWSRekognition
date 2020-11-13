@@ -14,13 +14,12 @@ print(os.getcwd())
 def main():
 	print(" > text-detector.py utiliza los servicios de AWS, para leer el texto de imagenes y compararlos con una imagen control.\n",
 		"> Lea el README.txt para mas detalles de como usar el software.\n",
-		"> --------------------------------------------------------------------------\n\n",
-		"> Ingrese su Bucket e imagen de Control, luego ingrese imagenes de prueba a comprar con el control.")
+		"> --------------------------------------------------------------------------\n")
 
 	bucket = input(" > Ingrese nombre de su Bucket en AWS: ")
-	controlpath = input(" > Ingrese nombre de imagen de Control: ")
+	controlpath = input(" > Ingrese imagen de Control: ")
 
-	logger('Analizando ' + controlpath + ' en ' + bucket)
+	logger('Rekognition text-detection a ' + controlpath + ' en ' + bucket)
 	if not image_in_bucket(bucket, controlpath):
 		push_bucket(bucket, controlpath)
 	controlrekogn = rekognition.detect_text( Image = {'S3Object':{'Bucket': bucket,'Name':controlpath}})
@@ -33,13 +32,13 @@ def main():
 			# Terminate while
 			break
 
-		logger('Analizando ' + testpath + ' en ' + bucket)
+		logger('Rekognition text-detection a ' + testpath + ' en ' + bucket)
 		if not image_in_bucket(bucket, testpath):
 			push_bucket(bucket, testpath)
 
 		testrekogn = rekognition.detect_text( Image = {'S3Object':{'Bucket': bucket,'Name': testpath}} )
-		
-		print(rekognition_comparator(controlrekogn, testrekogn))
+		logger('Comprobando si el texto de' + testpath + 'se encuentra en ' + 'controlpath')
+		var comparation = rekognition_comparator(controlrekogn, testrekogn)
 		# we rekognition
 		
 		pass
@@ -49,6 +48,7 @@ def main():
 	return 0
 
 def rekognition_comparator(detected_text1, detected_text2):
+
 	text1_list = []
 	text1_confidences =[]
 	text2_list = []
@@ -66,13 +66,13 @@ def rekognition_comparator(detected_text1, detected_text2):
 	print(text1_list)
 	print(text2_list)
 
-	if len(text1_list) == len(text2_list):
+	if len(text1_list) <= len(text2_list):
 		for i in range(len(text1_list)):
-			if text1_list[i] != text2_list[i]:
+			if text1_list[i] in text2_list:
+				continue
+			else:
 				return 0
 		return 1
-
-	return 0
 
 #Checks if filepath is in bucket
 def image_in_bucket(bucket, filepath):
@@ -95,7 +95,6 @@ def push_bucket(bucket, filepath):
 		logger(err)
 	
 	return 0
-
 
 #Just logs whats passed as text
 def logger(text):
