@@ -1,4 +1,5 @@
 import boto3, io, os
+from statistics import mean
 from datetime import datetime
 
 # Bucket Service
@@ -8,7 +9,7 @@ rekognition = boto3.client("rekognition")
 
 # Working directory is text-detector.py folders
 os.chdir(os.path.dirname(os.path.abspath('__file__')))
-print(os.getcwd())
+print('WORKING DIRECTORY: ' + os.getcwd())
 
 
 def main():
@@ -28,7 +29,7 @@ def main():
 	print(" > Ingrese nombres de sus imagenes de prueba, o 0 para salir.")
 	while (1):
 		testpath = input(" > Ingrese imagen de Prueba: ")
-		if testpath == 0:
+		if testpath == '0':
 			# Terminate while
 			break
 
@@ -38,12 +39,12 @@ def main():
 
 		testrekogn = rekognition.detect_text( Image = {'S3Object':{'Bucket': bucket,'Name': testpath}} )
 		logger('Comprobando si el texto de' + testpath + 'se encuentra en ' + 'controlpath')
-		var comparation = rekognition_comparator(controlrekogn, testrekogn)
+		comparation = rekognition_comparator(controlrekogn, testrekogn)
 		# we rekognition
-		
-		pass
-
-	while 1:
+		if comparation:
+			print('True')
+		else:
+			print('False')
 		pass
 	return 0
 
@@ -53,6 +54,7 @@ def rekognition_comparator(detected_text1, detected_text2):
 	text1_confidences =[]
 	text2_list = []
 	text2_confidences = []
+
 	#Lets get all our words and confidences of those words
 	for texts in detected_text1['TextDetections']:
 		if texts['Type'] == 'WORD':
@@ -63,6 +65,15 @@ def rekognition_comparator(detected_text1, detected_text2):
 			text2_list.append(texts['DetectedText'].lower())
 			text2_confidences.append(texts['Confidence'])
 
+	
+	mean1_confidences = mean(text1_confidences)
+	mean2_confidences = mean(text2_confidences)
+	print(mean1_confidences , ' ' , mean2_confidences)
+
+	if (mean1_confidences < 97 or mean2_confidences < 97):
+		logger("Confianza insuficiente de textos, media1 = " + mean1_confidences + ', media2 = ' + mean2_confidences)
+		return 0
+
 	print(text1_list)
 	print(text2_list)
 
@@ -71,8 +82,10 @@ def rekognition_comparator(detected_text1, detected_text2):
 			if text1_list[i] in text2_list:
 				continue
 			else:
-				return 0
-		return 1
+				logger('Texto NO contenido en imagen de prueba. media1 = ' + mean1_confidences + ', media2 = ' + mean2_confidences)
+				return False
+		logger('Texto de imagen de control, contenido en prueba.  media1 = ' + mean1_confidences + ', media2 = ' + mean2_confidences)
+		return True
 
 #Checks if filepath is in bucket
 def image_in_bucket(bucket, filepath):
@@ -106,6 +119,5 @@ def logger(text):
 	#Escribiendo0
 	logs.write(logtext)
 	return logs.close()
-
 
 main()
