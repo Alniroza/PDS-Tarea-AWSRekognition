@@ -8,7 +8,7 @@ s3 = boto3.client('s3')
 rekognition = boto3.client("rekognition")
 
 # Working directory is text-detector.py folders
-os.chdir(os.path.dirname(os.path.abspath('__file__')))
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 print('WORKING DIRECTORY: ' + os.getcwd())
 
 

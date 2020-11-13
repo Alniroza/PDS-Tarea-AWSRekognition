@@ -8,6 +8,10 @@ Boto3 for Python\
 AWS Credentials\
 
 # Instrucciones de uso
+IMPORTANTE: Si al ejecutar el programa, el Working directory es distinto de la carpeta del text-detector.py.
+En la linea 11, debes cambiar __file__ por '__file__' o viceversa.
+
+0.- Verificar que el Working directory corresponda a la ubicacion de text-detector.py (primer print al ejecutar el codigo)
 1.- Configurar las credenciales en %HOMEPATH$/.aws/credentials segun su cuenta de AWS\
 2.- Ejecutar text-detector.py\
 3.- Ingresar un Bucket valido (debe estar creado previamente y con permisos de acceso)\
