@@ -56,12 +56,13 @@ def rekognition_comparator(detected_text1, detected_text2):
 	text2_confidences = []
 
 	#Lets get all our words and confidences of those words
+	#Lets ignore all words with less than 97% confidence.
 	for texts in detected_text1['TextDetections']:
-		if texts['Type'] == 'WORD':
+		if texts['Type'] == 'WORD' and texts['Confidence'] > 97:
 			text1_list.append(texts['DetectedText'].lower())
 			text1_confidences.append(texts['Confidence'])
 	for texts in detected_text2['TextDetections']:
-		if texts['Type'] == 'WORD':
+		if texts['Type'] == 'WORD' and texts['Confidence'] > 97:
 			text2_list.append(texts['DetectedText'].lower())
 			text2_confidences.append(texts['Confidence'])
 
